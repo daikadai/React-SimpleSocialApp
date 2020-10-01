@@ -19,7 +19,7 @@ function Footer() {
       </p>
       <p className="m-0">
         Copyright &copy; 2020{" "}
-        <Link to="/" clLinkssName="text-muted">
+        <Link to="/" className="text-muted">
           ComplexApp
         </Link>
         . All rights reserved.
