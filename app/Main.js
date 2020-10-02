@@ -9,6 +9,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Home from "./components/Home";
 import CreatePost from "./components/CreatePost";
 import Axios from "axios";
+import ViewSinglePost from "./components/ViewSinglePost";
 
 Axios.defaults.baseURL = 'http://localhost:8080'
 
@@ -21,6 +22,9 @@ function Main() {
       <Switch>
         <Route path="/" exact>
           { loggedIn ? <Home /> : <HomeGuest />}
+        </Route>
+        <Route path="/post/:id">
+          <ViewSinglePost />
         </Route>
         <Route path="/create-post" exact>
           <CreatePost />
