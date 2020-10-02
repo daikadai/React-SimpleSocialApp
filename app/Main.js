@@ -7,6 +7,10 @@ import Header from "./components/Header";
 import HomeGuest from "./components/HomeGuest";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import Home from "./components/Home";
+import CreatePost from "./components/CreatePost";
+import Axios from "axios";
+
+Axios.defaults.baseURL = 'http://localhost:8080'
 
 function Main() {
   const [loggedIn, setLoggedIn] = useState(Boolean(localStorage.getItem('complexappToken')));
@@ -17,6 +21,9 @@ function Main() {
       <Switch>
         <Route path="/" exact>
           { loggedIn ? <Home /> : <HomeGuest />}
+        </Route>
+        <Route path="/create-post" exact>
+          <CreatePost />
         </Route>
         <Route path="/about-us" exact>
           <About />
