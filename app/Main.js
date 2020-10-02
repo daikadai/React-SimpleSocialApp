@@ -14,6 +14,7 @@ import FlashMessages from "./components/FlashMessages";
 import StateContext from "./StateContext";
 import DispatchContext from "./DispatchContext";
 import { useImmerReducer } from "use-immer";
+import Profile from "./components/Profile";
 
 Axios.defaults.baseURL = "http://localhost:8080";
 
@@ -65,6 +66,9 @@ function Main() {
           <FlashMessages messages={state.flashMessages} />
           <Header/>
           <Switch>
+            <Route path="/profile/:username">
+              <Profile />
+            </Route>
             <Route path="/" exact>
               {state.loggedIn ? <Home /> : <HomeGuest />}
             </Route>
