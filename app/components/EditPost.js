@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useImmerReducer } from "use-immer";
 import StateContext from "../StateContext";
-import DispatchContext from '../DispatchContext';
+import DispatchContext from "../DispatchContext";
 import LoadingDotsIcon from "./LoadingDotsIcon";
 import Page from "./Page";
 
@@ -35,20 +35,36 @@ function EditPost(props) {
         draft.isFetching = false;
         return;
       case "titleChange":
+        draft.title.hasErrors = false;
         draft.title.value = action.value;
         return;
       case "bodyChange":
+        draft.body.hasErrors = false;
         draft.body.value = action.value;
         return;
       case "submitRequest":
-        draft.sendCount++;
+        if (!draft.title.hasErrors && !draft.body.hasErrors) {
+          draft.sendCount++;
+        }
         return;
       case "saveRequestStarted":
-        draft.isSaving = true
-        return
-      case 'saveRequestFinished':
-        draft.isSaving = false
-        return
+        draft.isSaving = true;
+        return;
+      case "saveRequestFinished":
+        draft.isSaving = false;
+        return;
+      case "titleRules":
+        if (!action.value.trim()) {
+          draft.title.hasErrors = true;
+          draft.title.message = "You must provide a title.";
+        }
+        return;
+      case "bodyRules":
+        if (!action.value.trim()) {
+          draft.body.hasErrors = true;
+          draft.body.message = "You must provide a body.";
+        }
+        return;
     }
   }
 
@@ -56,6 +72,8 @@ function EditPost(props) {
 
   function submitHandle(e) {
     e.preventDefault();
+    dispatch({ type: "titleRules", value: state.title.value });
+    dispatch({ type: "bodyRules", value: state.body.value });
     dispatch({ type: "submitRequest" });
   }
 
@@ -81,7 +99,7 @@ function EditPost(props) {
 
   useEffect(() => {
     if (state.sendCount) {
-      dispatch({ type: 'saveRequestStarted' })
+      dispatch({ type: "saveRequestStarted" });
 
       const ourRequest = Axios.CancelToken.source();
 
@@ -98,9 +116,9 @@ function EditPost(props) {
               cancelToken: ourRequest.token,
             }
           );
-          console.log(response.data);
-          dispatch({ type: 'saveRequestFinished'});
-          appDispatch({ type: 'flashMessage', value: 'Post was updated'})
+          console.log(response);
+          dispatch({ type: "saveRequestFinished" });
+          appDispatch({ type: "flashMessage", value: "Post was updated" });
         } catch (error) {
           console.log("There was a problem or the request was cancelled.");
         }
@@ -138,7 +156,15 @@ function EditPost(props) {
               dispatch({ type: "titleChange", value: e.target.value })
             }
             value={state.title.value}
+            onBlur={(e) =>
+              dispatch({ type: "titleRules", value: e.target.value })
+            }
           />
+          {state.title.hasErrors && (
+            <div className="alert alert-danger small liveValidateMessage">
+              {state.title.message}
+            </div>
+          )}
         </div>
 
         <div className="form-group">
@@ -154,10 +180,20 @@ function EditPost(props) {
               dispatch({ type: "bodyChange", value: e.target.value })
             }
             value={state.body.value}
+            onBlur={(e) =>
+              dispatch({ type: "bodyRules", value: e.target.value })
+            }
           />
+          {state.body.hasErrors && (
+            <div className="alert alert-danger small liveValidateMessage">
+              {state.body.message}
+            </div>
+          )}
         </div>
 
-        <button className="btn btn-primary" disabled={state.isSaving}>Save Update Post</button>
+        <button className="btn btn-primary" disabled={state.isSaving}>
+          Save Update Post
+        </button>
       </form>
     </Page>
   );
