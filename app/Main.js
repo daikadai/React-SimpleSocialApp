@@ -16,6 +16,7 @@ import DispatchContext from "./DispatchContext";
 import { useImmerReducer } from "use-immer";
 import Profile from "./components/Profile";
 import EditPost from "./components/EditPost";
+import NotFound from "./components/NotFound";
 
 Axios.defaults.baseURL = "http://localhost:8080";
 
@@ -87,6 +88,9 @@ function Main() {
             </Route>
             <Route path="/terms" exact>
               <Terms />
+            </Route>
+            <Route>
+              <NotFound />
             </Route>
           </Switch>
           <Footer />
