@@ -18,6 +18,7 @@ import Profile from "./components/Profile";
 import EditPost from "./components/EditPost";
 import NotFound from "./components/NotFound";
 import Search from "./components/Search";
+import { CSSTransition } from "react-transition-group";
 
 Axios.defaults.baseURL = "http://localhost:8080";
 
@@ -101,7 +102,9 @@ function Main() {
               <NotFound />
             </Route>
           </Switch>
-          { state.isSearchOpen ? <Search /> : ''}
+          <CSSTransition timeout={330} in={state.isSearchOpen} classNames="search-overlay" unmountOnExit>
+            <Search />
+          </CSSTransition>
           <Footer />
         </BrowserRouter>
       </DispatchContext.Provider>
