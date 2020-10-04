@@ -1,8 +1,16 @@
 import React, { useContext, useEffect } from "react";
+import { useImmer } from "use-immer";
 import DispatchContext from "../DispatchContext";
 
 function Search(props) {
   const appDispatch = useContext(DispatchContext);
+
+  const [state, setState] = useImmer({
+    searchTerm: '',
+    results: [],
+    show: 'neither',
+    requestCount: 0
+  })
 
   useEffect(() => {
     document.addEventListener('keyup', searchKeyPressHandler);
@@ -10,10 +18,25 @@ function Search(props) {
     return () => document.removeEventListener('keyup', searchKeyPressHandler);
   }, [])
 
+  useEffect(() => {
+    const delay = setTimeout(() => {
+      console.log(state.searchTerm);
+    }, 3000);
+     
+    return () => clearTimeout(delay)
+  },[state.searchTerm])
+
   function searchKeyPressHandler(e) {
     if(e.keyCode == 27) {
       appDispatch({ type: 'closeSearch' })
     }
+  }
+
+  function handleInput(e) {
+    const value = e.target.value;
+    setState(draft => {
+      draft.searchTerm = value
+    })
   }
 
   return (
@@ -24,6 +47,7 @@ function Search(props) {
             <i className="fas fa-search"></i>
           </label>
           <input
+            onChange={handleInput}
             autoFocus
             type="text"
             autoComplete="off"
