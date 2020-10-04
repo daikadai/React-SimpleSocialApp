@@ -25,7 +25,7 @@ function ProfilePost(props) {
     return () => {
       ourRequest.cancel();
     }
-  }, []);
+  }, [username]);
 
   if (isLoading) return <LoadingDotsIcon />;
 
