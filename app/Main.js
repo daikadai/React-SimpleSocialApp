@@ -17,6 +17,7 @@ import { useImmerReducer } from "use-immer";
 import Profile from "./components/Profile";
 import EditPost from "./components/EditPost";
 import NotFound from "./components/NotFound";
+import Search from "./components/Search";
 
 Axios.defaults.baseURL = "http://localhost:8080";
 
@@ -28,7 +29,8 @@ function Main() {
       token: localStorage.getItem('complexappToken'),
       username: localStorage.getItem('complexappUsername'),
       avatar: localStorage.getItem('complexappAvatar')
-    }
+    },
+    isSearchOpen: false
   };
 
   function ourReducer(draft, action) {
@@ -42,6 +44,12 @@ function Main() {
         return 
       case "flashMessage":
         draft.flashMessages.push(action.value)
+        return
+      case "openSearch":
+        draft.isSearchOpen = true;
+        return
+      case "closeSearch":
+        draft.isSearchOpen = false;
         return
     }
   }
@@ -93,6 +101,7 @@ function Main() {
               <NotFound />
             </Route>
           </Switch>
+          { state.isSearchOpen ? <Search /> : ''}
           <Footer />
         </BrowserRouter>
       </DispatchContext.Provider>
