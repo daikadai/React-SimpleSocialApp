@@ -30,16 +30,24 @@ function HeaderLoggedIn(props) {
       </a>
       <ReactTooltip place="bottom" id="search" className="custom-tooltip" />{" "}
       <span
-        onClick={() => appDispatch({ type: 'toggleChat'})}
+        onClick={() => appDispatch({ type: "toggleChat" })}
         data-for="chat"
         data-tip="Chat"
-        className="mr-2 header-chat-icon text-white"
+        className={
+          "mr-2 header-chat-icon " +
+          (appState.unreadChatCount ? "text-danger" : "text-white")
+        }
       >
         <i className="fas fa-comment"></i>
-        <span className="chat-count-badge text-white"> </span>
+        {appState.unreadChatCount ? (
+          <span className="chat-count-badge text-white">
+            {appState.unreadChatCount < 10 ? appState.unreadChatCount : "9+"}
+          </span>
+        ) : (
+          ""
+        )}
       </span>
-      <ReactTooltip place="bottom" id="chat" className="custom-tooltip" />
-      {" "}
+      <ReactTooltip place="bottom" id="chat" className="custom-tooltip" />{" "}
       <Link
         data-for="profile"
         data-tip="My Profile"
@@ -48,8 +56,7 @@ function HeaderLoggedIn(props) {
       >
         <img className="small-header-avatar" src={appState.user.avatar} />
       </Link>
-      <ReactTooltip place="bottom" id="profile" className="custom-tooltip" />
-      {" "}
+      <ReactTooltip place="bottom" id="profile" className="custom-tooltip" />{" "}
       <Link className="btn btn-sm btn-success mr-2" to="/create-post">
         Create Post
       </Link>{" "}
