@@ -1,20 +1,75 @@
 import Axios from "axios";
 import React, { useState } from "react";
+import { CSSTransition } from "react-transition-group";
+import { useImmerReducer } from "use-immer";
 import Page from "./Page";
 
 function HomeGuest() {
-  const [username, setUsername] = useState();
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const initialState = {
+    username: {
+      value: '',
+      hasErrors: false,
+      message: '',
+      isUnique: false,
+      checkCount: 0
+    },
+    email: {
+      value: '',
+      hasErrors: false,
+      message: '',
+      isUnique: false,
+      checkCount: 0
+    },
+    password: {
+      value: '',
+      hasErrors: false,
+      message: '',
+    },
+    submitCount: 0
+  }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    try {
-      await Axios.post('/register', {username, email, password});
-      console.log('User was successfully created');
-    } catch (error) {
-      console.log('There was an error');
+  function ourReducer(draft,action) {
+    switch(action.type) {
+      case 'usernameImmediately':
+        draft.username.hasErrors = false;
+        draft.username.value = action.value;
+        if(draft.username.value.length > 30) {
+          draft.username.hasErrors = true
+          draft.username.message = 'Username cannot exceed 30 characters'
+        }
+        if(draft.username.value && !/^([a-zA-Z0-9]+)$/.test(draft.username.value)) {
+          draft.username.hasErrors = true
+          draft.username.message = "Username can only contain letters and numbers."
+        }
+        return
+      case 'usernameAfterDelay': 
+        return 
+      case 'usernameUniqueResults':
+        return
+      case 'emailImmediately':
+        draft.email.hasErrors = false;
+        draft.email.value = action.value;
+        return 
+      case 'emailAfterImmediately':
+        return
+      case 'emailUniqueResults':
+        return
+      case 'passwordImmediately':
+        draft.password.hasErrors = false;
+        draft.password.value = action.value;
+        return
+      case 'passwordAfterDelay':
+        return 
+      case 'submitForm':
+        return 
     }
+  }
+
+  const [state, dispatch] = useImmerReducer(ourReducer, initialState);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    
   }
 
   return (
@@ -42,8 +97,11 @@ function HomeGuest() {
                 type="text"
                 placeholder="Pick a username"
                 autoComplete="off"
-                onChange={e => setUsername(e.target.value)}
+                onChange={e => dispatch({ type: 'usernameImmediately', value: e.target.value})}
               />
+              <CSSTransition in={state.username.hasErrors} timeout={330} classNames="liveValidateMessage" unmountOnExit>
+                <div className="alert alert-danger small liveValidateMessage">{state.username.message}</div>
+              </CSSTransition>
             </div>
             <div className="form-group">
               <label htmlFor="email-register" className="text-muted mb-1">
@@ -56,7 +114,7 @@ function HomeGuest() {
                 type="text"
                 placeholder="you@example.com"
                 autoComplete="off"
-                onChange={e => setEmail(e.target.value)}
+                onChange={e => dispatch({ type: 'emailImmediately', value: e.target.value})}
               />
             </div>
             <div className="form-group">
@@ -69,7 +127,7 @@ function HomeGuest() {
                 className="form-control"
                 type="password"
                 placeholder="Create a password"
-                onChange={e => setPassword(e.target.value)}
+                onChange={e => dispatch({ type: 'passwordImmediately', value: e.target.value})}
               />
             </div>
             <button
